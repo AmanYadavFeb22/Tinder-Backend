@@ -4,19 +4,20 @@ const {User}=require('./models/user')
 const app = express();
 const PORT = 3000;
 
-
+app.use(express.json())
 app.post("/signup",async(req,res)=>{
+    console.log(req.body)
 
-    const userObj={
-        firstName:"Aman",
-        lastName:"Yadav",
-        emailId:"Aman@gmail.com",
-        password:"Aman@123",
-        age:12,
-        Gender:"Male"
-    }
-    //creating a neew intance of user model
-    const user=new User(userObj)
+    // const userObj={
+    //     firstName:"Aman",
+    //     lastName:"Yadav",
+    //     emailId:"Aman@gmail.com",
+    //     password:"Aman@123",
+    //     age:12,
+    //     Gender:"Male"
+    // }
+    // creating a new intance of user model
+    const user=new User(req.body)
     try {
         await user.save()
         res.send("User Details saved successfully")
