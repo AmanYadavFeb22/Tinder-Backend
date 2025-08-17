@@ -2,54 +2,24 @@ const express = require("express");
 const connectdb = require("./config/database");
 const bcrypt = require("bcrypt");
 const { User } = require("./models/user");
+const cookieparser=require('cookie-parser')
+const jwt=require('jsonwebtoken')
+const{userAuth}=require('../middlewares/adminauth')
 const { validateSignUpData } = require("./utils.js/validation");
+const authRouter=require('./routes/authRouter')
+const profileRouter=require('./routes/profileRouter')
+const connectionRequest=require('./routes/connectionRequest')
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+app.use(cookieparser());
 
-app.post("/signup", async (req, res) => {
-  try {
-    validateSignUpData(req);
+app.use("/",authRouter)
+app.use("/",profileRouter)
+app.use("/",connectionRequest)
 
-    const { firstName, lastName, emailId, password } = req.body;
 
-    const passwordHash = await bcrypt.hash(password, 10);
-
-    //creating a new instance of User model
-    const user = new User({
-      firstName,
-      lastName,
-      emailId,
-      password: passwordHash,
-    });
-
-    await user.save();
-    res.send("User Details saved successfully");
-  } catch (error) {
-    res.status(500).send("Error saving user data" + error.message);
-  }
-});
-
-app.post("/login", async (req, res) => {
-  try {
-    const { emailId, password } = req.body;
-    const user = await User.findOne({ emailId: emailId });
-
-    if (!user) {
-      throw new Error("email id does not exist");
-    }
-
-    const checkPassword = await bcrypt.compare(password, user.password);
-    if (checkPassword) {
-      res.send("Login successfull");
-    } else {
-      throw new Error("wrong password");
-    }
-  } catch (error) {
-    res.status(500).send("Error saving user data" + error.message);
-  }
-});
 
 //Getting a user data from the database by email
 app.get("/user", async (req, res) => {
