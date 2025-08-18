@@ -11,6 +11,24 @@ else if(!validator.isStrongPassword(password)){
 else if(!validator.isEmail(emailId)){
     throw new Error('Enter a valid email Id')
 }
-
 }
-module.exports={validateSignUpData}
+
+const ValidateProfileEdit=(req)=>{
+     const UPDATE_ALLOW = [
+    "firstName",
+    "lastName",
+    "About",
+    "Skills",
+    "Gender",
+    "age",
+    "photoUrl"
+  ];
+
+  const isUpdateAllow=Object.keys(req.body).every(field => UPDATE_ALLOW.includes(field))
+  return isUpdateAllow;
+  
+}
+
+
+
+module.exports={validateSignUpData,ValidateProfileEdit}
