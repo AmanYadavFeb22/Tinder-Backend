@@ -60,4 +60,36 @@ connectionRequest.post(
   }
 );
 
+connectionRequest.post("/request/review/:status/:requestId",userAuth,async(req,res)=>{
+try {
+  const logginUser=req.user
+  const{status,requestId}=req.params
+  const VALIDATE_STATUS=["accepted","rejected"]
+  if(!VALIDATE_STATUS.includes(status)){
+     throw new Error("Invalid status")
+  }
+  const sendconnection= await ConnectionModel.findOne({
+    _id: requestId,
+    toUserId:logginUser._id,
+    status:"Interested"
+  })
+
+  if(!sendconnection){
+    throw new Error("You cannot send request because yo have not receive request")
+  }
+
+  sendconnection.status=status
+  const savingData=await sendconnection.save()
+  res.send("connection request sent")
+
+
+
+
+  
+} catch (error) {
+  res.status(400).send("Error sending request :" + error.message)
+}
+
+})
+
 module.exports = connectionRequest;
