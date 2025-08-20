@@ -1,6 +1,7 @@
 const express = require("express");
 const { userAuth } = require("../../middlewares/adminauth");
 const { ConnectionModel } = require("../models/makeConnection");
+const{User}=require('../models/user')
 const userRouter = express.Router();
 
 userRouter.get("/user/request/received", userAuth, async (req, res) => {
@@ -47,7 +48,7 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
 
     const request = connectionRequest.map((data) => {
       if (logginUser._id.toString() === data.fromUserId._id.toString()) {
-         return data.toUserId;
+        return data.toUserId;
       }
 
       return data.fromUserId;
@@ -60,6 +61,24 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
   } catch (error) {
     res.status(400).send("Error" + error.message);
   }
+});
+
+userRouter.get("/user/feed", userAuth, async (req, res) => {
+  const logginUser = req.user;
+  const connectionRequest = await ConnectionModel.find({
+    $or: [{ fromUserId: logginUser._id }, { toUserId: logginUser._id }],
+  }).select("fromUserId toUserId");
+
+  const DO_NOT_FEED = new Set();
+  connectionRequest.forEach((user) => {
+    DO_NOT_FEED.add(user.fromUserId.toString());
+    DO_NOT_FEED.add(user.toUserId.toString());
+  });
+
+  const userToFeed = await User.find({
+    $and: [{ _id: { $nin: Array.from(DO_NOT_FEED) } }, {_id:{ $ne: logginUser._id }}],
+  }).select("firstName lastName About age photoUrl Skills")
+  res.send(userToFeed);
 });
 
 module.exports = userRouter;
