@@ -65,6 +65,12 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
 
 userRouter.get("/user/feed", userAuth, async (req, res) => {
   const logginUser = req.user;
+  const page= parseInt(req.query.page) || 1
+  let limit=parseInt(req.query.limit)|| 10
+  if(limit>10){
+    limit=10
+  }
+  const skip=(page-1)*limit
   const connectionRequest = await ConnectionModel.find({
     $or: [{ fromUserId: logginUser._id }, { toUserId: logginUser._id }],
   }).select("fromUserId toUserId");
@@ -77,8 +83,8 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
 
   const userToFeed = await User.find({
     $and: [{ _id: { $nin: Array.from(DO_NOT_FEED) } }, {_id:{ $ne: logginUser._id }}],
-  }).select("firstName lastName About age photoUrl Skills")
-  res.send(userToFeed);
+  }).select("firstName lastName About age photoUrl Skills").skip(skip).limit(limit)
+  res.json({data:userToFeed});
 });
 
 module.exports = userRouter;
