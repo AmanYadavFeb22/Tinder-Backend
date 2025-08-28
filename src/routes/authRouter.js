@@ -18,12 +18,12 @@ authRouter.post("/login", async (req, res) => {
       const token=await user.getJwt()
       res.cookie("token",token)
       
-      res.send("Login successfull");
+      res.json({message:"Login successfull",data:user})
     } else {
       throw new Error("wrong password");
     }
   } catch (error) {
-    res.status(500).send("Error saving user data" + error.message);
+    res.status(500).send("Error Logging user " + error.message);
   }
 });
 
