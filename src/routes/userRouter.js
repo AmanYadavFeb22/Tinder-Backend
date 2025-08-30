@@ -55,8 +55,8 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
     });
 
     res.json({
-      data: ` you have connection with these people`,
-      message: request,
+      message: ` you have connection with these people`,
+      data: request,
     });
   } catch (error) {
     res.status(400).send("Error" + error.message);

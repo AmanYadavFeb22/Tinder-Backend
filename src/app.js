@@ -15,10 +15,21 @@ const app = express();
 const PORT = 3000;
 
 
-app.use(cors({
-  origin:'http://localhost:5173/',
-  credentials:true
-}))
+const corsOptions = {
+  origin: 'http://localhost:5173',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+app.use(cors(corsOptions)); 
+app.options(/.*/, cors(corsOptions));
+
+
+
+
+
+
+
 app.use(express.json());
 app.use(cookieparser());
 
@@ -29,7 +40,7 @@ app.use("/",userRouter)
 
 
 
-//Getting a user data from the database by email
+
 app.get("/user", async (req, res) => {
   const userData = req.body.emailId;
   try {

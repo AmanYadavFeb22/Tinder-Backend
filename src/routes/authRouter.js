@@ -31,13 +31,16 @@ authRouter.post("/signup", async (req, res) => {
   try {
     validateSignUpData(req);
 
-    const { firstName, lastName, emailId, password } = req.body;
+    const { firstName, lastName, emailId, password,age,Gender,photoUrl } = req.body;
 
     const passwordHash = await bcrypt.hash(password, 10);
 
     //creating a new instance of User model
     const user = new User({
       firstName,
+      age,
+      Gender,
+      photoUrl,
       lastName,
       emailId,
       password: passwordHash,
