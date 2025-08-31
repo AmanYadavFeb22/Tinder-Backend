@@ -32,7 +32,7 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
       data: updatedProfile
     });
   } catch (error) {
-    res.json({error: error.message});
+    res.json({message: error.message});
   }
 });
 
